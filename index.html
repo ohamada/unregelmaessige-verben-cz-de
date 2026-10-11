@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Learn and practise German irregular verbs: Präsens, Präteritum and Perfekt.">
+  <meta name="theme-color" content="#f3f5f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121a2e" media="(prefers-color-scheme: dark)">
+  <title>Nepravidelná německá slovesa</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/literata-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="bar-inner">
+      <a class="brand" href="#overview" data-i18n="appTitle">German irregular verbs</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="de" lang="de">DE</button>
+        <button type="button" data-lang="cs" lang="cs">CS</button>
+      </div>
+      <nav class="tabs">
+        <a href="#overview" data-nav="overview" data-i18n="navOverview">Overview</a>
+        <a href="#practice" data-nav="practice" data-i18n="navPractice">Practice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Overview -->
+    <section id="view-overview" class="view">
+      <div class="overview-head">
+        <h1 data-i18n="navOverview">Overview</h1>
+        <p class="note" data-i18n="overviewNote"></p>
+        <div class="search-row">
+          <input id="search" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-placeholder="search" aria-label="Search">
+          <span id="verb-count" class="count"></span>
+        </div>
+      </div>
+      <div class="vlist" role="table">
+        <div class="vrow vhead" role="row">
+          <span role="columnheader" data-i18n="colInfinitive"></span>
+          <span role="columnheader" data-i18n="tPres"></span>
+          <span role="columnheader" data-i18n="tPraet"></span>
+          <span role="columnheader" data-i18n="tPerf"></span>
+          <span role="columnheader" data-i18n="colMeaning"></span>
+        </div>
+        <div id="verb-rows" role="rowgroup"></div>
+      </div>
+      <p id="no-results" class="empty" hidden></p>
+    </section>
+
+    <!-- Practice -->
+    <section id="view-practice" class="view" hidden>
+      <!-- Setup -->
+      <form id="setup" class="panel" novalidate>
+        <h1 data-i18n="setupTitle">Practice</h1>
+        <p class="lead" data-i18n="setupIntro"></p>
+
+        <fieldset>
+          <legend data-i18n="modeLabel"></legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="mode" value="write" checked><span data-i18n="modeWrite"></span></label>
+            <label class="chip"><input type="radio" name="mode" value="choice"><span data-i18n="modeChoice"></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="tensesLabel"></legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="tense" value="p" checked><span data-i18n="tPres"></span></label>
+            <label class="chip"><input type="checkbox" name="tense" value="t" checked><span data-i18n="tPraet"></span></label>
+            <label class="chip"><input type="checkbox" name="tense" value="pp" checked><span data-i18n="tPerf"></span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="countLabel"></legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="count" value="10" checked><span>10</span></label>
+            <label class="chip"><input type="radio" name="count" value="20"><span>20</span></label>
+            <label class="chip"><input type="radio" name="count" value="50"><span>50</span></label>
+            <label class="chip"><input type="radio" name="count" value="all"><span id="count-all-label"></span></label>
+            <label class="chip"><input type="radio" name="count" value="custom"><span data-i18n="countCustom"></span></label>
+            <input id="custom-count" class="num" type="number" inputmode="numeric" min="1" step="1" value="15" aria-label="Number of verbs">
+          </div>
+        </fieldset>
+
+        <p id="setup-error" class="error" role="alert" hidden></p>
+        <button type="submit" class="btn primary wide" data-i18n="start">Start practice</button>
+      </form>
+
+      <!-- Session -->
+      <div id="session" class="panel" hidden>
+        <div class="session-top">
+          <span id="progress-text" class="muted"></span>
+          <button type="button" id="quit" class="btn link" data-i18n="quit"></button>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+        <div class="prompt">
+          <div id="prompt-pic" class="prompt-pic" aria-hidden="true"></div>
+          <p id="prompt-verb" class="prompt-verb" lang="de"></p>
+          <p id="prompt-meaning" class="prompt-meaning"></p>
+        </div>
+
+        <form id="answer-form" autocomplete="off" novalidate>
+          <div id="fields"></div>
+          <div id="keys" class="keys" role="group" data-i18n-aria="keysLabel">
+            <button type="button" data-key="ä">ä</button>
+            <button type="button" data-key="ö">ö</button>
+            <button type="button" data-key="ü">ü</button>
+            <button type="button" data-key="ß">ß</button>
+          </div>
+          <div class="actions">
+            <button type="button" id="reveal" class="btn ghost" data-i18n="reveal"></button>
+            <button type="submit" id="primary" class="btn primary"></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="panel" hidden>
+        <h1 data-i18n="resultsTitle">Results</h1>
+        <p id="score" class="score"></p>
+        <p id="score-detail" class="muted"></p>
+        <div id="mistakes"></div>
+        <div class="actions stack">
+          <button type="button" id="retry" class="btn primary" data-i18n="retryMistakes"></button>
+          <button type="button" id="new-practice" class="btn ghost" data-i18n="newPractice"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/verbs.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
